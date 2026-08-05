@@ -1,0 +1,173 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222 47% 6%;
+    --foreground: 210 40% 96%;
+    --card: 222 40% 9%;
+    --card-foreground: 210 40% 96%;
+    --popover: 222 44% 8%;
+    --popover-foreground: 210 40% 96%;
+    --primary: 172 76% 42%;
+    --primary-foreground: 222 47% 6%;
+    --secondary: 222 30% 14%;
+    --secondary-foreground: 210 40% 96%;
+    --muted: 222 25% 13%;
+    --muted-foreground: 215 20% 55%;
+    --accent: 198 80% 42%;
+    --accent-foreground: 222 47% 6%;
+    --destructive: 0 72% 50%;
+    --destructive-foreground: 210 40% 96%;
+    --success: 142 64% 42%;
+    --success-foreground: 222 47% 6%;
+    --warning: 38 92% 52%;
+    --warning-foreground: 222 47% 6%;
+    --border: 222 25% 16%;
+    --input: 222 25% 16%;
+    --ring: 172 76% 42%;
+    --gold: 43 90% 56%;
+    --gold-foreground: 222 47% 6%;
+
+    /* Layered surfaces — used instead of card-wrapping everything */
+    --surface-1: 222 38% 8.5%;
+    --surface-2: 222 34% 11%;
+    --surface-3: 222 30% 13.5%;
+
+    /* Layout metrics — referenced across the shell */
+    --nav-top-h: 56px;
+    --nav-side-w: 96px;
+
+    --radius: 0.3125rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    font-size: 14px;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--border));
+    border-radius: 3px;
+  }
+  .bg-surface-1 { background-color: hsl(var(--surface-1)); }
+  .bg-surface-2 { background-color: hsl(var(--surface-2)); }
+  .bg-surface-3 { background-color: hsl(var(--surface-3)); }
+  .bg-grid {
+    background-image:
+      linear-gradient(hsl(var(--border) / 0.25) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.25) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+  .glow-primary {
+    box-shadow: 0 0 18px -6px hsl(var(--primary) / 0.55);
+  }
+  .glow-accent {
+    box-shadow: 0 0 18px -6px hsl(var(--accent) / 0.55);
+  }
+  .bevel-top {
+    box-shadow: inset 0 1px 0 0 hsl(var(--primary) / 0.22);
+  }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  @keyframes pop {
+    0%   { transform: scale(0.3); opacity: 0; }
+    50%  { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .animate-pop {
+    animation: pop 0.3s ease-out;
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in {
+    animation: fade-in 0.2s ease-out;
+  }
+
+  .mines-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: hsl(var(--surface-3));
+    outline: none;
+  }
+  .mines-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: hsl(var(--primary));
+    cursor: pointer;
+    border: 2px solid hsl(var(--background));
+    box-shadow: 0 0 6px -1px hsl(var(--primary) / 0.6);
+  }
+  .mines-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: hsl(var(--primary));
+    cursor: pointer;
+    border: 2px solid hsl(var(--background));
+  }
+
+  .dice-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, hsl(var(--surface-3)), hsl(var(--surface-2)));
+    outline: none;
+  }
+  .dice-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: hsl(var(--primary));
+    cursor: pointer;
+    border: 3px solid hsl(var(--background));
+    box-shadow: 0 0 8px -1px hsl(var(--primary) / 0.6);
+  }
+  .dice-slider::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: hsl(var(--primary));
+    cursor: pointer;
+    border: 3px solid hsl(var(--background));
+  }
+}
