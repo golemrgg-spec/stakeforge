@@ -1,0 +1,5 @@
+[functions.minecraft-bridge]
+verify_jwt = false
+
+[functions.minecraft-link]
+verify_jwt = true
