@@ -27,7 +27,7 @@ export function CoinflipPage() {
   const [pfData, setPfData] = useState<ProvablyFairData | null>(null);
   const flipTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const betAmount = Math.max(minBet, Math.min(maxBet, dollarsToCents(parseFloat(betInput) || 0)));
+  const betAmount = dollarsToCents(parseFloat(betInput) || 0);
 
   useEffect(() => {
     getGameConfig('coinflip').then((cfg) => { if (cfg) { setMinBet(cfg.min_bet); setMaxBet(cfg.max_bet); } });
@@ -36,8 +36,9 @@ export function CoinflipPage() {
 
   const handleFlip = useCallback(async () => {
     if (flipping || !user) return;
-    if (!wallet || wallet.balance < betAmount) { toast.error('Insufficient balance'); return; }
     if (betAmount < minBet) { toast.error(`Minimum bet is ${formatMD(minBet)}`); return; }
+    if (betAmount > maxBet) { toast.error(`Maximum bet is ${formatMD(maxBet)}`); return; }
+    if (!wallet || wallet.balance < betAmount) { toast.error('Insufficient balance'); return; }
 
     setFlipping(true); setResult(null); setPfData(null);
     setCoinAnim('flipping'); setLandedSide(null);

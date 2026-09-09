@@ -127,6 +127,8 @@ export function BlackjackPage() {
 
   const handleDeal = useCallback(async () => {
     if (!user || busy || playing) return;
+    if (betAmount < minBet) { toast.error(`Minimum bet is ${formatMD(minBet)}`); return; }
+    if (betAmount > maxBet) { toast.error(`Maximum bet is ${formatMD(maxBet)}`); return; }
     if (!wallet || wallet.balance < betAmount) { toast.error('Insufficient balance'); return; }
     setBusy(true);
     setServerSeed(null);

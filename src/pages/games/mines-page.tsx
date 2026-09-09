@@ -16,7 +16,7 @@ import {
 } from '@/game-engine/game-service';
 import { ProvablyFairPanel } from '@/game-engine/provably-fair-panel';
 import { useGameHistory } from '@/game-engine/use-game-history';
-import { cn, formatCoins, dollarsToCents } from '@/lib/utils';
+import { cn, formatCoins, dollarsToCents, centsToDollars } from '@/lib/utils';
 import { toast } from 'sonner';
 
 const BOARD_SIZES = [
@@ -58,8 +58,8 @@ export function MinesPage() {
 
   // Config
   const [rtp, setRtp] = useState(0.99);
-  const [minBet, setMinBet] = useState(0.01);
-  const [maxBet, setMaxBet] = useState(1000);
+  const [minBet, setMinBet] = useState(0.1);
+  const [maxBet, setMaxBet] = useState(50000);
   const [maxPayoutCap, setMaxPayoutCap] = useState(10000);
 
   // UI state
@@ -81,15 +81,15 @@ export function MinesPage() {
   const boardSize = BOARD_SIZES[boardSizeIdx];
   const mineRange = getMineCountRange(boardSize.totalTiles);
   const safeMineCount = Math.min(Math.max(mineCount, mineRange.min), mineRange.max);
-  const betAmount = Math.max(minBet, Math.min(maxBet, parseFloat(betInput) || 0));
+  const betAmount = parseFloat(betInput) || 0;
 
   // Load game config from DB on mount
   useEffect(() => {
     getGameConfig('mines').then((cfg) => {
       if (!cfg) return;
       setRtp(cfg.rtp);
-      setMinBet(cfg.min_bet);
-      setMaxBet(cfg.max_bet);
+      setMinBet(centsToDollars(cfg.min_bet));
+      setMaxBet(centsToDollars(cfg.max_bet));
       setMaxPayoutCap(cfg.max_payout);
     });
   }, []);
@@ -160,8 +160,9 @@ export function MinesPage() {
 
   const handleStart = useCallback(async () => {
     if (!user || loading) return;
-    if (betAmount < minBet) { toast.error(`Minimum bet is ${formatCoins(minBet)}`); return; }
-    if (!wallet || wallet.balance < betAmount) { toast.error('Insufficient balance'); return; }
+    if (betAmount < minBet) { toast.error(`Minimum bet is ${formatCoins(dollarsToCents(minBet))}`); return; }
+    if (betAmount > maxBet) { toast.error(`Maximum bet is ${formatCoins(dollarsToCents(maxBet))}`); return; }
+    if (!wallet || wallet.balance < dollarsToCents(betAmount)) { toast.error('Insufficient balance'); return; }
 
     setLoading(true);
     try {
@@ -179,7 +180,7 @@ export function MinesPage() {
       setTiles(Array(boardSize.totalTiles).fill('hidden'));
       setRevealedIndices([]);
       setCurrentMultiplier(1);
-      setCurrentPayout(betAmount);
+      setCurrentPayout(dollarsToCents(betAmount));
       setFinalResult(null);
       refreshWallet();
       setTimeout(() => focusRef.current?.focus(), 100);
@@ -217,7 +218,7 @@ export function MinesPage() {
         setCurrentPayout(0);
         setFinalResult({
           payout: 0,
-          profit: -betAmount,
+          profit: -dollarsToCents(betAmount),
           multiplier: 0,
           serverSeed: result.server_seed ?? '',
           mineIndices: result.mine_indices ? Array.from(result.mine_indices as unknown as number[]) : [],
@@ -281,7 +282,7 @@ export function MinesPage() {
     setActiveGame(null);
     setRevealedIndices([]);
     setCurrentMultiplier(1);
-    setCurrentPayout(betAmount);
+    setCurrentPayout(dollarsToCents(betAmount));
     setFinalResult(null);
   };
 

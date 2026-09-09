@@ -61,11 +61,12 @@ export function AdminWalletDialog({
 
   const previewBalance = (): string => {
     if (!selectedAction || !selectedAction.needsAmount) return formatCoins(currentBalance);
-    if (action === 'add') return formatCoins(currentBalance + numericAmount);
-    if (action === 'remove') return formatCoins(currentBalance - numericAmount);
-    if (action === 'set') return formatCoins(numericAmount);
-    if (action === 'lock') return formatCoins(currentBalance - numericAmount);
-    if (action === 'unlock') return formatCoins(currentBalance + numericAmount);
+    const amountInCents = dollarsToCents(numericAmount);
+    if (action === 'add') return formatCoins(currentBalance + amountInCents);
+    if (action === 'remove') return formatCoins(currentBalance - amountInCents);
+    if (action === 'set') return formatCoins(amountInCents);
+    if (action === 'lock') return formatCoins(currentBalance - amountInCents);
+    if (action === 'unlock') return formatCoins(currentBalance + amountInCents);
     return formatCoins(currentBalance);
   };
 
@@ -211,7 +212,7 @@ export function AdminWalletDialog({
               {selectedAction?.needsAmount && (
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Amount</span>
-                  <span className="font-mono font-medium">{formatCoins(numericAmount)}</span>
+                  <span className="font-mono font-medium">{formatCoins(dollarsToCents(numericAmount))}</span>
                 </div>
               )}
               <div className="flex justify-between">

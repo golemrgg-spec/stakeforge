@@ -53,7 +53,7 @@ export function RoulettePage() {
   const [strip, setStrip] = useState<Color[]>(() => randomStrip(STRIP_LENGTH));
   const animRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
-  const betAmount = Math.max(minBet, Math.min(maxBet, dollarsToCents(parseFloat(betInput) || 0)));
+  const betAmount = dollarsToCents(parseFloat(betInput) || 0);
 
   useEffect(() => {
     getGameConfig('roulette').then((cfg) => { if (cfg) { setMinBet(cfg.min_bet); setMaxBet(cfg.max_bet); } });
@@ -62,8 +62,9 @@ export function RoulettePage() {
 
   const handleBet = useCallback(async () => {
     if (busy || !user) return;
-    if (!wallet || wallet.balance < betAmount) { toast.error('Insufficient balance'); return; }
     if (betAmount < minBet) { toast.error(`Minimum bet is ${formatMD(minBet)}`); return; }
+    if (betAmount > maxBet) { toast.error(`Maximum bet is ${formatMD(maxBet)}`); return; }
+    if (!wallet || wallet.balance < betAmount) { toast.error('Insufficient balance'); return; }
 
     setBusy(true); setResult(null); setPfData(null); setHighlightColor(null); setGameState('spinning');
 

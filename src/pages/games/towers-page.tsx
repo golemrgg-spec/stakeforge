@@ -32,7 +32,7 @@ export function TowersPage() {
   const [busted, setBusted] = useState(false);
   const [pfData, setPfData] = useState<ProvablyFairData | null>(null);
 
-  const betAmount = Math.max(minBet, Math.min(maxBet, dollarsToCents(parseFloat(betInput) || 0)));
+  const betAmount = dollarsToCents(parseFloat(betInput) || 0);
   const cols = session ? session.columns : DIFFICULTY_COLS[difficulty];
   const mults = session ? session.multipliers : [];
   const currentPayout = level > 0 ? Math.round(betAmount * multiplier) : 0;
@@ -43,6 +43,8 @@ export function TowersPage() {
 
   const handleStart = useCallback(async () => {
     if (busy || !user) return;
+    if (betAmount < minBet) { toast.error(`Minimum bet is ${formatMD(minBet)}`); return; }
+    if (betAmount > maxBet) { toast.error(`Maximum bet is ${formatMD(maxBet)}`); return; }
     if (!wallet || wallet.balance < betAmount) { toast.error('Insufficient balance'); return; }
     setBusy(true); setPfData(null);
     try {

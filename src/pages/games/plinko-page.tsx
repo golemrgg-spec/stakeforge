@@ -176,7 +176,7 @@ export function PlinkoPage() {
   const [animPath, setAnimPath] = useState<number[] | null>(null);
   const [animSlot, setAnimSlot] = useState<number | null>(null);
 
-  const betAmount = Math.max(minBet, Math.min(maxBet, dollarsToCents(parseFloat(betInput) || 0)));
+  const betAmount = dollarsToCents(parseFloat(betInput) || 0);
   const mults = RISK_MULTS[risk];
   const rows = RISK_ROWS[risk];
 
@@ -190,8 +190,9 @@ export function PlinkoPage() {
 
   const handleDrop = useCallback(async () => {
     if (busy || !user) return;
-    if (!wallet || wallet.balance < betAmount) { toast.error('Insufficient balance'); return; }
     if (betAmount < minBet) { toast.error(`Minimum bet is ${formatMD(minBet)}`); return; }
+    if (betAmount > maxBet) { toast.error(`Maximum bet is ${formatMD(maxBet)}`); return; }
+    if (!wallet || wallet.balance < betAmount) { toast.error('Insufficient balance'); return; }
 
     setBusy(true);
     setResult(null);

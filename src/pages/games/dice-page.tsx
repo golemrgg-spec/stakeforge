@@ -7,7 +7,7 @@ import { calculateDiceMultiplier, getDiceTarget } from '@/game-engine/dice-math'
 import { playDiceGame } from '@/game-engine/game-service';
 import { ProvablyFairPanel, type ProvablyFairData } from '@/game-engine/provably-fair-panel';
 import { useGameHistory } from '@/game-engine/use-game-history';
-import { cn, formatCoins, dollarsToCents } from '@/lib/utils';
+import { cn, formatCoins, dollarsToCents, centsToDollars } from '@/lib/utils';
 import { toast } from 'sonner';
 
 interface RollResult {
@@ -34,8 +34,8 @@ export function DicePage() {
   // Config from DB
   const [rtp, setRtp] = useState(0.99);
   const [houseEdge, setHouseEdge] = useState(0.01);
-  const [minBet, setMinBet] = useState(0.01);
-  const [maxBet, setMaxBet] = useState(1000);
+  const [minBet, setMinBet] = useState(0.1);
+  const [maxBet, setMaxBet] = useState(50000);
   const [minWinChance, setMinWinChance] = useState(2);
   const [maxWinChance, setMaxWinChance] = useState(98);
 
@@ -51,7 +51,7 @@ export function DicePage() {
   // Derived from engine (never hardcoded)
   const multiplier = calculateDiceMultiplier(winChance, rtp);
   const target = getDiceTarget(winChance, direction);
-  const betAmount = Math.max(minBet, Math.min(maxBet, parseFloat(betInput) || 0));
+  const betAmount = parseFloat(betInput) || 0;
   const profitDisplay = betAmount * multiplier - betAmount;
 
   useEffect(() => {
@@ -59,8 +59,8 @@ export function DicePage() {
       if (!cfg) return;
       setRtp(cfg.rtp);
       setHouseEdge(cfg.house_edge);
-      setMinBet(cfg.min_bet);
-      setMaxBet(cfg.max_bet);
+      setMinBet(centsToDollars(cfg.min_bet));
+      setMaxBet(centsToDollars(cfg.max_bet));
       const minWC = typeof cfg.custom.min_win_chance === 'number' ? cfg.custom.min_win_chance : 2;
       const maxWC = typeof cfg.custom.max_win_chance === 'number' ? cfg.custom.max_win_chance : 98;
       setMinWinChance(minWC);
@@ -88,8 +88,9 @@ export function DicePage() {
 
   const handleRoll = useCallback(async () => {
     if (!user || rolling) return;
-    if (!wallet || wallet.balance < betAmount) { toast.error('Insufficient balance'); return; }
-    if (betAmount < minBet) { toast.error(`Minimum bet is ${formatCoins(minBet)}`); return; }
+    if (betAmount < minBet) { toast.error(`Minimum bet is ${formatCoins(dollarsToCents(minBet))}`); return; }
+    if (betAmount > maxBet) { toast.error(`Maximum bet is ${formatCoins(dollarsToCents(maxBet))}`); return; }
+    if (!wallet || wallet.balance < dollarsToCents(betAmount)) { toast.error('Insufficient balance'); return; }
 
     setRolling(true);
     setAnimatedValue(null);
@@ -200,7 +201,7 @@ export function DicePage() {
             </label>
             <div className="flex h-9 items-center gap-2 rounded border border-border/60 bg-surface-2 px-3">
               <span className="text-[13px] font-bold text-gold">$</span>
-              <span className="font-mono text-[14px] font-bold">{formatCoins(profitDisplay)}</span>
+              <span className="font-mono text-[14px] font-bold">{formatCoins(dollarsToCents(profitDisplay))}</span>
             </div>
           </div>
 
