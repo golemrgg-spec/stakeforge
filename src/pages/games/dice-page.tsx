@@ -7,7 +7,7 @@ import { calculateDiceMultiplier, getDiceTarget } from '@/game-engine/dice-math'
 import { playDiceGame } from '@/game-engine/game-service';
 import { ProvablyFairPanel, type ProvablyFairData } from '@/game-engine/provably-fair-panel';
 import { useGameHistory } from '@/game-engine/use-game-history';
-import { cn, formatCoins } from '@/lib/utils';
+import { cn, formatCoins, dollarsToCents } from '@/lib/utils';
 import { toast } from 'sonner';
 
 interface RollResult {
@@ -95,7 +95,7 @@ export function DicePage() {
     setAnimatedValue(null);
 
     try {
-      const result = await playDiceGame(user.id, betAmount, winChance, direction);
+      const result = await playDiceGame(user.id, dollarsToCents(betAmount), winChance, direction);
 
       // Animate, then reveal
       runAnimation(result.rolled);

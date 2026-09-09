@@ -16,7 +16,7 @@ import {
 } from '@/game-engine/game-service';
 import { ProvablyFairPanel } from '@/game-engine/provably-fair-panel';
 import { useGameHistory } from '@/game-engine/use-game-history';
-import { cn, formatCoins } from '@/lib/utils';
+import { cn, formatCoins, dollarsToCents } from '@/lib/utils';
 import { toast } from 'sonner';
 
 const BOARD_SIZES = [
@@ -165,7 +165,7 @@ export function MinesPage() {
 
     setLoading(true);
     try {
-      const result = await startMinesGame(user.id, betAmount, safeMineCount, boardSize.totalTiles);
+      const result = await startMinesGame(user.id, dollarsToCents(betAmount), safeMineCount, boardSize.totalTiles);
       setActiveGame({
         sessionId: result.session_id,
         serverSeedHash: result.server_seed_hash,

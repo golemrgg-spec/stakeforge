@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Settings, Loader2, Save } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import { cn, formatCoins } from '@/lib/utils';
+import { cn, formatCoins, centsToDollars, dollarsToCents } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader } from '@/components/loader';
@@ -106,7 +106,7 @@ export function AdminGamesPage() {
             <div className="space-y-1.5">
               {fields.map((field) => {
                 const val = cfg[field.key as keyof GameConfig] as number;
-                const displayVal = field.pct ? (val * 100).toFixed(2) : val;
+                const displayVal = field.pct ? (val * 100).toFixed(2) : field.dollar ? centsToDollars(val) : val;
                 return (
                   <div key={field.key} className="grid grid-cols-[100px_1fr] items-center gap-2">
                     <label className="text-[11px] uppercase tracking-wide text-muted-foreground">{field.label}</label>
@@ -123,7 +123,7 @@ export function AdminGamesPage() {
                         min={0}
                         onChange={(e) => {
                           const raw = parseFloat(e.target.value);
-                          const stored = field.pct ? raw / 100 : raw;
+                          const stored = field.pct ? raw / 100 : field.dollar ? dollarsToCents(raw) : raw;
                           handleConfigChange(cfg.game_type, field.key, String(stored));
                         }}
                         className="h-8 w-full rounded border border-border/60 bg-surface-2 pl-6 pr-2 text-[12px] font-mono focus:border-primary/50 focus:outline-none"

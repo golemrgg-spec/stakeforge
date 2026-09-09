@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Plus, Minus, Equal, Lock, Unlock, AlertTriangle } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import { formatCoins } from '@/lib/utils';
+import { formatCoins, dollarsToCents } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -85,7 +85,7 @@ export function AdminWalletDialog({
       const { data, error } = await supabase.rpc('admin_adjust_wallet', {
         p_target_user_id: userId,
         p_action: action,
-        p_amount: selectedAction?.needsAmount ? numericAmount : null,
+        p_amount: selectedAction?.needsAmount ? dollarsToCents(numericAmount) : null,
         p_reason: reason.trim(),
       });
 
